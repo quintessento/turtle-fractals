@@ -109,6 +109,7 @@ class LSystem:
 
     ts = self.turtle.getscreen()
     ts.screensize(4000, 4000)
+    ts.setup(width=1.0, height=1.0, startx=None, starty=None)
 
   def draw(self):
     instruction = self.axiom
