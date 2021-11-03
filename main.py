@@ -148,6 +148,26 @@ class LSystem:
 
     # call mainloop to let the graphics window stay open after the turtle has finished drawing
     turtle.mainloop()
+    
+    
+class IFS:
+    
+    def __init__(self):
+        self.turtle = turtle.Turtle()
+        self.turtle.speed(10)
+        self.turtle.setheading(90)
+
+        ts = self.turtle.getscreen()
+        ts.screensize(4000, 4000)
+        ts.setup(width=1.0, height=1.0, startx=None, starty=None)
+    
+    def go_to_point(self, a, b, c, d, e, f):
+        p = self.turtle.pos()
+        
+        x = a * p[0] + b * p[1] + e
+        y = c * p[0] + d * p[1] + f
+        
+        self.turtle.goto(x, y)
 
 
 def forward(t, length, angle, saved_states):
@@ -181,39 +201,56 @@ def push_and_turn_left(t, length, angle, saved_states):
 def pop_and_turn_right(t, length, angle, saved_states):
   pop(t, length, angle, saved_states)
   turn_right(t, length, angle, saved_states)
+  
+  
+# IFS
+
+ifs = IFS()
+
+                   #set 1     set 2     set 3     set 4
+             #a     0.0100   -0.0100    0.4200    0.4200
+             #b     0.0000    0.0000   -0.4200    0.4200
+             #c     0.0000    0.0000    0.4200   -0.4200
+             #d     0.4500   -0.4500    0.4200    0.4200
+             #e     0.0000    0.0000    0.0000    0.0000
+             #f     0.0000    0.4000    0.4000    0.4000
+
+ifs.go_to_point(0.0100, 0.0000, 0.0000, 0.4500, 0.0000, 0.0000)
+turtle.mainloop()
 
 # variables : 0, 1
 # constants: “[”, “]”
 # axiom  : 0
 # rules  : (1 → 11), (0 → 1[0]0)
 
-# tree_system = \
-#   LSystem(depth = 5, rules = { "1" : "11", "0" : "1[0]0" }, axiom = "0", angle = 45, length = 30,
-#     actions = { "1" : forward, "0" : leaf, "[" : push_and_turn_left, "]" : pop_and_turn_right }
-#   )
+#tree_system = \
+  #LSystem(depth = 7, rules = { "1" : "11", "0" : "1[0]0" }, axiom = "0", angle = 45, length = 15,
+    #actions = { "1" : forward, "0" : leaf, "[" : push_and_turn_left, "]" : pop_and_turn_right }
+  #)
 
 # axiom = FX
 # X -> [-FX]+FX
 # angle = 40
 
-# tree_system = LSystem(depth = 2, rules = { "X" : "[-FX]+FX" }, axiom = "FX", angle = 40, actions = { "F" : forward, "X" : leaf })
+#tree_system = LSystem(depth = 2, rules = { "X" : "[-FX]+FX" }, axiom = "FX", length = 30, angle = 40, 
+    #actions = { "F" : forward, "X" : leaf, "-" : turn_left, "+" : turn_right, "[" : push, "]" : pop })
 
 # axiom = X
 # F -> FF
 # X -> F[+X]F[-X]+X
 # angle = 20
 
-# tree_system = LSystem(depth = 5, rules = { "F" : "FF", "X" : "F[+X]F[-X]+X" }, axiom = "X", length = 30, angle = 20, 
-#   actions = { "F" : forward, "X" : leaf, "-" : turn_left, "+" : turn_right, "[" : push, "]" : pop })
+#tree_system = LSystem(depth = 5, rules = { "F" : "FF", "X" : "F[+X]F[-X]+X" }, axiom = "X", length = 30, angle = 20, 
+  #actions = { "F" : forward, "X" : leaf, "-" : turn_left, "+" : turn_right, "[" : push, "]" : pop })
 
-tree_system = LSystem(depth = 2, rules = { "F" : "F+F-F-FF+F+F-F" }, axiom = "F+F+F+F", length = 30, angle = 90,
-  actions = { "F" : forward, "-" : turn_left, "+" : turn_right })
+#tree_system = LSystem(depth = 2, rules = { "F" : "F+F-F-FF+F+F-F" }, axiom = "F+F+F+F", length = 30, angle = 90,
+  #actions = { "F" : forward, "-" : turn_left, "+" : turn_right })
 
 
-tree_system.draw()
+#tree_system.draw()
 
 # F[-F[-FX]+FX]+F[-FX]+FX
 
-# colors = ['red', 'green', 'blue', 'magenta']
-# chaos_game = ChaosGame(colors)
-# chaos_game.play_polygon(5, 200, include_mid_points = False, num_iterations = 50000, step = (1.0 / 2.0), draw_outline = False)
+#colors = ['red', 'green', 'blue', 'magenta']
+#chaos_game = ChaosGame(colors)
+#chaos_game.play_polygon(5, 200, include_mid_points = False, num_iterations = 50000, step = (1.0 / 2.0), draw_outline = False)
