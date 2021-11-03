@@ -97,11 +97,13 @@ class ChaosGame:
 
 class LSystem:
 
-  def __init__(self, depth = 1, rules = {}, axiom = "", angle = 0):
+  def __init__(self, depth = 1, rules = {}, axiom = "", length = 30, angle = 0, actions = {}):
     self.depth = depth
     self.rules = rules
     self.axiom = axiom
+    self.length = length
     self.angle = angle
+    self.actions = actions
 
     self.turtle = turtle.Turtle()
     self.turtle.speed(10)
@@ -140,48 +142,72 @@ class LSystem:
 
     saved_states = []
 
-    curr_length = 30
     for command in instruction:
-      if command == '[':
-        saved_states.append((self.turtle.pos(), self.turtle.heading()))
-        # curr_length /= 2
-      elif command == ']':
-        pos, angle = saved_states.pop()
-        self.turtle.penup()
-        self.turtle.setpos(pos)
-        self.turtle.setheading(angle)
-        self.turtle.pendown()
-
-      elif command == '-':
-        self.turtle.left(self.angle)
-      elif command == '+':
-        self.turtle.right(self.angle)
-      elif command == 'F':
-        self.turtle.color('black')
-        self.turtle.forward(curr_length)
-      elif command == 'X':
-        self.turtle.color('red')
-        self.turtle.forward(curr_length)
-        # curr_length = 100
+      if command in self.actions:
+        self.actions[command](self.turtle, self.length, self.angle, saved_states)
 
     # call mainloop to let the graphics window stay open after the turtle has finished drawing
     turtle.mainloop()
 
-    
+
+def forward(t, length, angle, saved_states):
+  t.color('black')
+  t.forward(length)
+
+def leaf(t, length, angle, saved_states):
+  t.color('red')
+  t.forward(length)
+
+def turn_left(t, length, angle, saved_states):
+  t.left(angle)
+
+def turn_right(t, length, angle, saved_states):
+  t.right(angle)
+
+def push(t, length, angle, saved_states):
+  saved_states.append((t.pos(), t.heading()))
+
+def pop(t, length, angle, saved_states):
+  pos, angle = saved_states.pop()
+  t.penup()
+  t.setpos(pos)
+  t.setheading(angle)
+  t.pendown()
+
+def push_and_turn_left(t, length, angle, saved_states):
+  push(t, length, angle, saved_states)
+  turn_left(t, length, angle, saved_states)
+
+def pop_and_turn_right(t, length, angle, saved_states):
+  pop(t, length, angle, saved_states)
+  turn_right(t, length, angle, saved_states)
+
+# variables : 0, 1
+# constants: “[”, “]”
+# axiom  : 0
+# rules  : (1 → 11), (0 → 1[0]0)
+
+# tree_system = \
+#   LSystem(depth = 5, rules = { "1" : "11", "0" : "1[0]0" }, axiom = "0", angle = 45, length = 30,
+#     actions = { "1" : forward, "0" : leaf, "[" : push_and_turn_left, "]" : pop_and_turn_right }
+#   )
+
 # axiom = FX
 # X -> [-FX]+FX
 # angle = 40
 
-# tree_system = LSystem(depth = 2, rules = { "X" : "[-FX]+FX" }, axiom = "FX", angle = 40)
+# tree_system = LSystem(depth = 2, rules = { "X" : "[-FX]+FX" }, axiom = "FX", angle = 40, actions = { "F" : forward, "X" : leaf })
 
 # axiom = X
 # F -> FF
 # X -> F[+X]F[-X]+X
 # angle = 20
 
-tree_system = LSystem(depth = 5, rules = { "F" : "FF", "X" : "F[+X]F[-X]+X" }, axiom = "X", angle = 20)
+# tree_system = LSystem(depth = 5, rules = { "F" : "FF", "X" : "F[+X]F[-X]+X" }, axiom = "X", length = 30, angle = 20, 
+#   actions = { "F" : forward, "X" : leaf, "-" : turn_left, "+" : turn_right, "[" : push, "]" : pop })
 
-# tree_system = LSystem(depth = 2, rules = { "F" : "F+F-F-FF+F+F-F" }, axiom = "F+F+F+F", angle = 90)
+tree_system = LSystem(depth = 2, rules = { "F" : "F+F-F-FF+F+F-F" }, axiom = "F+F+F+F", length = 30, angle = 90,
+  actions = { "F" : forward, "-" : turn_left, "+" : turn_right })
 
 
 tree_system.draw()
