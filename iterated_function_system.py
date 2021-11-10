@@ -5,24 +5,26 @@ import os
 
 class Rectangle:
     
-    def __init__(self, x, y, width, height, angle):
+    def __init__(self, x, y, width, height, scale, angle):
         self.x = x
         self.y = y
         self.width = width
         self.height = height
+        self.scale = scale
         self.angle = angle
-    
-    def apply_transform(self, translate_x, translate_y, scale_x, scale_y, rotate_z):
-        pass
-    
+        
+        self.half_width = self.width * 0.5
+        self.half_height = self.height * 0.5
+        self.angle_rad = (self.angle + 90) * math.pi / 180.0
+
     def draw(self, t):
 
-        half_width = self.width * 0.5
-        half_height = self.height * 0.5
-        angle_rad = (self.angle + 90) * math.pi / 180.0
 
         t.penup()
-        t.setpos(self.x - half_width * math.cos(angle_rad), self.y - half_height * math.sin(angle_rad)) 
+        #t.setpos((self.x) * math.cos(self.angle_rad) - (self.y) * math.sin(self.angle_rad), 
+                 #(self.x) * math.sin(self.angle_rad) + (self.y) * math.cos(self.angle_rad)) 
+        t.setpos(self.x - self.half_width * math.cos(self.angle_rad), 
+                 self.y - self.half_height * math.sin(self.angle_rad)) 
         t.setheading(self.angle + 90)
         t.pendown()
 
@@ -38,54 +40,59 @@ class Rectangle:
 
 class Shape:
 
-    def __init__(self, x, y, width, height, angle):
+    def __init__(self, x, y, scale, angle):
+        #self.width = width
+        #self.height = height
         self.children = []
         self.rectangles = []
-
-        self.rectangles.append(Rectangle(x * 1.0, y * 1.0, width * 1.0, height * 1.0, angle * 1.0))
-        # self.rectangles.append(Rectangle(
-        #     x * 1.0 + width * -0.35, 
-        #     y * 1.0 + height * 0.45, 
-        #     width * 1.2, 
-        #     height * 0.6, 
-        #     angle + 360 * 0.04
-        # ))
-        # self.rectangles.append(Rectangle(
-        #     x * 1.0 + width * 0.25, 
-        #     y * 1.0 + height * 0.7,
-        #     width * 0.9, 
-        #     height * 0.6, 
-        #     angle - 360 * 0.05
-        # ))
+        
+        angle1 = angle + 360 * 0.0
+        angle1_rad = (angle1 + 90) * math.pi / 180.0
         self.rectangles.append(Rectangle(
-            x * 1.0 + width * -0.75, 
-            y * 1.0 + height * 0.45, 
-            width * 1.2, 
-            height * 0.6, 
-            angle + 360 * 0.04
+            x,
+            y,
+            #x * math.cos(angle1_rad) - y * math.sin(angle1_rad), 
+            #x * math.sin(angle1_rad) + y * math.cos(angle1_rad), 
+            400 * 1.0 * scale, 
+            400 * 1.0 * scale, 
+            scale,
+            angle1
         ))
+        
+        angle2 = angle * scale + 360 * 0.06
+        angle2_rad = (angle2 + 90) * math.pi / 180.0
         self.rectangles.append(Rectangle(
-            x * 1.0 + width * 0.5, 
-            y * 1.0 + height * 0.7,
-            width * 0.9, 
-            height * 0.6, 
-            angle - 360 * 0.05
+            #x + 400 * -0.75 * scale,
+            #y + 400 * 0.3 * scale,
+            x * math.cos(angle2_rad) - y * math.sin(angle2_rad) + 400 * -0.75 * scale, 
+            x * math.sin(angle2_rad) + y * math.cos(angle2_rad) + 400 * 0.3 * scale, 
+            400 * 1.2 * scale, 
+            400 * 0.6 * scale, 
+            scale,
+            angle2
+        ))
+        
+        angle3 = angle * scale - 360 * 0.06
+        angle3_rad = (angle3 + 90) * math.pi / 180.0
+        self.rectangles.append(Rectangle(
+            #x + 400 * 0.5 * scale,
+            #y + 400 * 0.7 * scale,
+            x * math.cos(angle3_rad) - y * math.sin(angle3_rad) + 400 * 0.5 * scale, 
+            x * math.sin(angle3_rad) + y * math.cos(angle3_rad) + 400 * 0.7 * scale,
+            400 * 0.9 * scale, 
+            400 * 0.6 * scale, 
+            scale,
+            angle3
         ))
 
     def expand(self, depth):
         if depth > 0:
             for r in self.rectangles:
-                self.children.append(Shape(r.x, r.y, r.width * 0.5, r.height * 0.5, r.angle))
+                self.children.append(Shape(r.x, r.y, r.scale * 0.5, r.angle))
             self.rectangles.clear()
 
             for s in self.children:
                 s.expand(depth - 1)
-
-    def apply_transform(self, translate_x, translate_y, scale_x, scale_y, rotate_z):
-        pass
-        # self.rect1.apply_transform(translate_x, translate_y, scale_x, scale_y, rotate_z)
-        # self.rect2.apply_transform(translate_x, translate_y, scale_x, scale_y, rotate_z)
-        # self.rect3.apply_transform(translate_x, translate_y, scale_x, scale_y, rotate_z)
         
     def draw(self, t):
         if not self.children:
@@ -101,7 +108,7 @@ class IFS:
     def __init__(self):
         self.turtle = turtle.Turtle()
         self.turtle.hideturtle()
-        turtle.tracer(30, 0)
+
         self.turtle.setheading(90)
 
         ts = self.turtle.getscreen()
@@ -109,12 +116,14 @@ class IFS:
         
         if os.name == 'nt':
             ts.setup(width=0.99, height=0.99, startx=None, starty=None)
+            turtle.tracer(30, 0)
         else:
             ts.setup(width=1.00, height=1.00, startx=None, starty=None)
+            turtle.tracer(1, 0)
     
     def generate(self):
-        shape = Shape(0, 0, 400, 400, 0)
-        shape.expand(5)
+        shape = Shape(0, 0, 1.0, 0)
+        shape.expand(1)
         shape.draw(self.turtle)
         
         turtle.mainloop()
