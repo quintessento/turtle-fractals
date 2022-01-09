@@ -85,4 +85,4 @@ class IFSPoint:
 
 def run_example_1():
     ifs = IFSPoint()
-    ifs.iterate(1000)
+    ifs.iterate(10000)
