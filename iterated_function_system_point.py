@@ -1,5 +1,4 @@
 import turtle
-import math
 import os
 import random
 import sys
@@ -55,12 +54,11 @@ class IFSPoint:
         
         self.turtle = turtle.Turtle()
         self.turtle.hideturtle()
-        turtle.tracer(2000, 25)
+        self.turtle.speed(0)
+        turtle.tracer(1, 0)
         self.turtle.penup()
         self.prev_x = 0.0
         self.prev_y = 0.0
-
-        # turtle.tracer(1, 0)
 
         ts = self.turtle.getscreen()
         ts.screensize(4000, 4000)
@@ -118,18 +116,22 @@ class IFSPoint:
         return random.choices(self.coefficient_set, weights=self.coefficient_weights, k=1)[0]
 
 
-def run_example_1():
+def run_example_1(iterations: int = 100000):
+    """ Draws a fern. """
     ifs = IFSPoint(FERN, FERN_WEIGHTS)
-    ifs.iterate(100000)
+    ifs.iterate(iterations)
     
-def run_example_2():
+def run_example_2(iterations: int = 100000):
+    """ Draws a maple leaf. """
     ifs = IFSPoint(MAPLE_LEAF, MAPLE_LEAF_WEIGHTS)
-    ifs.iterate(100000)
+    ifs.iterate(iterations)
     
-def run_example_3():
+def run_example_3(iterations: int = 100000):
+    """ Draws a tree. """
     ifs = IFSPoint(TREE, TREE_WEIGHTS)
-    ifs.iterate(100000)
+    ifs.iterate(iterations)
     
-def run_example_4():
+def run_example_4(iterations: int = 100000):
+    """ Draws a snowflake. """
     ifs = IFSPoint(SNOWFLAKE, SNOWFLAKE_WEIGHTS)
-    ifs.iterate(1000000)
+    ifs.iterate(iterations)

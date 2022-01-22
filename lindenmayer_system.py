@@ -25,7 +25,6 @@ class LSystem:
     print(instruction)
 
     for current_depth in range(self.depth):
-      
       inst_length = len(instruction)
       c_index = 0
       while c_index < inst_length:
@@ -92,9 +91,9 @@ def pop_and_turn_right(t, length, angle, saved_states):
 # constants: “[”, “]”
 # axiom  : 0
 # rules  : (1 → 11), (0 → 1[0]0)
-def run_example_1():
+def run_example_1(depth: int = 5):
     tree_system = \
-        LSystem(depth = 7, rules = { "1" : "11", "0" : "1[0]0" }, axiom = "0", angle = 45, length = 15,
+        LSystem(depth = depth, rules = { "1" : "11", "0" : "1[0]0" }, axiom = "0", angle = 45, length = 15,
             actions = { 
                 "1" : forward, "0" : leaf, 
                 "[" : push_and_turn_left, "]" : pop_and_turn_right 
@@ -105,8 +104,8 @@ def run_example_1():
 # axiom = FX
 # X -> [-FX]+FX
 # angle = 40
-def run_example_2():
-    tree_system = LSystem(depth = 2, rules = { "X" : "[-FX]+FX" }, axiom = "FX", length = 30, angle = 40, 
+def run_example_2(depth: int = 5):
+    tree_system = LSystem(depth = depth, rules = { "X" : "[-FX]+FX" }, axiom = "FX", length = 30, angle = 40, 
         actions = {
                 "F" : forward, "X" : leaf, 
                 "-" : turn_left, "+" : turn_right, 
@@ -119,8 +118,8 @@ def run_example_2():
 # F -> FF
 # X -> F[+X]F[-X]+X
 # angle = 20
-def run_example_3():
-    tree_system = LSystem(depth = 5, rules = { "F" : "FF", "X" : "F[+X]F[-X]+X" }, axiom = "X", length = 30, angle = 20, 
+def run_example_3(depth: int = 5):
+    tree_system = LSystem(depth = depth, rules = { "F" : "FF", "X" : "F[+X]F[-X]+X" }, axiom = "X", length = 30, angle = 20, 
         actions = { 
             "F" : forward, "X" : leaf, 
             "-" : turn_left, "+" : turn_right, 
@@ -129,8 +128,8 @@ def run_example_3():
     )
     tree_system.draw()
 
-def run_example_4():
-    tree_system = LSystem(depth = 2, rules = { "F" : "F+F-F-FF+F+F-F" }, axiom = "F+F+F+F", length = 30, angle = 90,
+def run_example_4(depth: int = 5):
+    tree_system = LSystem(depth = depth, rules = { "F" : "F+F-F-FF+F+F-F" }, axiom = "F+F+F+F", length = 30, angle = 90,
         actions = { "F" : forward, "-" : turn_left, "+" : turn_right })
     tree_system.draw()
 
